@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body, #app {
+      width: 100%;
+      height: 100%;
+    }
+
+    #app {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .color-circle {
+      width: 200px;
+      height: 200px;
+    }
+
+    .color-squares {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .color-square {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+      background: gray;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <canvas width="200" height="200" class="color-circle"></canvas>
+      <div class="color-squares">
+        <div class="color-square"></div>
+        <div class="color-square"></div>
+      </div>
+      <label for="hue">Hue</label>
+      <input type="range" id="hue" name="hue" min="0" max="360" value="0" step="1" />
+      <span class="hue-value"></span>
+      <label for="saturation">Saturation</label>
+      <input type="range" id="saturation" name="saturation" min="0" max="100" value="100" step="1" />
+      <span class="saturation-value"></span>
+    </div>
+    <script>
+      const { drawCircle } = require('./renderer.js')
+      const Color = require('color')
+      const squares = document.querySelectorAll('.color-square')
+      const hueValue = document.querySelector('.hue-value')
+      const saturationValue = document.querySelector('.saturation-value')
+      var hue = 0
+      var saturation = 100
+      function updateSquares() {
+        squares[0].style.backgroundColor = Color.hsv([
+          hue,
+          saturation,
+          100
+        ]).string()
+        let complement = hue + 180
+        while (complement > 360) {
+          complement -= 360
+        }
+        while (complement < 0) {
+          complement += 360
+        }
+        squares[1].style.backgroundColor = Color.hsv([
+          complement,
+          saturation,
+          100
+        ]).string()
+      }
+      function updateLabels() {
+        hueValue.innerHTML = `${hue}`
+        saturationValue.innerHTML = `${saturation}`
+      }
+      function update() {
+        updateSquares()
+        updateLabels()
+      }
+      const hueSlider = document.querySelector('#hue')
+      hueSlider.addEventListener('input', function (event) {
+        hue = parseInt(event.target.value)
+        update()
+      })
+      const saturationSlider = document.querySelector('#saturation')
+      saturationSlider.addEventListener('input', function (event) {
+        saturation = parseInt(event.target.value)
+        update()
+      })
+      const hueCircle = document.querySelector('.color-circle')
+      drawCircle(hueCircle.getContext('2d'));
+    </script>
+  </body>
+</html>
